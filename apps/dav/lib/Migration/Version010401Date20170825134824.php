@@ -1,0 +1,427 @@
+<?php
+namespace OCA\DAV\Migration;
+
+use Doctrine\DBAL\Schema\Schema;
+use OCP\Migration\SimpleMigrationStep;
+use OCP\Migration\IOutput;
+
+/**
+ * Auto-generated migration step: Please modify to your needs!
+ */
+class Version010401Date20170825134824 extends SimpleMigrationStep {
+	/**
+	 * @param IOutput $output
+	 * @param \Closure $schemaClosure The `\Closure` returns a `Schema`
+	 * @param array $options
+	 * @return null|Schema
+	 * @since 13.0.0
+	 */
+	public function changeSchema(IOutput $output, \Closure $schemaClosure, array $options) {
+		/** @var Schema $schema */
+		$schema = $schemaClosure();
+
+		if (!$schema->hasTable('addressbooks')) {
+			$table = $schema->createTable('addressbooks');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('principaluri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('displayname', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('description', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('synctoken', 'integer', [
+				'notnull' => true,
+				'default' => 1,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['principaluri', 'uri'], 'addressbook_index');
+		}
+
+		if (!$schema->hasTable('cards')) {
+			$table = $schema->createTable('cards');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('addressbookid', 'integer', [
+				'notnull' => true,
+				'default' => 0,
+			]);
+			$table->addColumn('carddata', 'blob', [
+				'notnull' => false,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('lastmodified', 'bigint', [
+				'notnull' => false,
+				'length' => 11,
+			]);
+			$table->addColumn('etag', 'string', [
+				'notnull' => false,
+				'length' => 32,
+			]);
+			$table->addColumn('size', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->setPrimaryKey(['id']);
+		}
+
+		if (!$schema->hasTable('addressbookchanges')) {
+			$table = $schema->createTable('addressbookchanges');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('synctoken', 'integer', [
+				'notnull' => true,
+				'default' => 1,
+			]);
+			$table->addColumn('addressbookid', 'integer', [
+				'notnull' => true,
+			]);
+			$table->addColumn('operation', 'smallint', [
+				'notnull' => true,
+				'length' => 1,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['addressbookid', 'synctoken'], 'addressbookid_synctoken');
+		}
+
+		if (!$schema->hasTable('calendarobjects')) {
+			$table = $schema->createTable('calendarobjects');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('calendardata', 'blob', [
+				'notnull' => false,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('calendarid', 'integer', [
+				'notnull' => true,
+			]);
+			$table->addColumn('lastmodified', 'integer', [
+				'notnull' => false,
+			]);
+			$table->addColumn('etag', 'string', [
+				'notnull' => false,
+				'length' => 32,
+			]);
+			$table->addColumn('size', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('componenttype', 'string', [
+				'notnull' => false,
+				'length' => 8,
+			]);
+			$table->addColumn('firstoccurence', 'bigint', [
+				'notnull' => false,
+				'length' => 11,
+			]);
+			$table->addColumn('lastoccurence', 'bigint', [
+				'notnull' => false,
+				'length' => 11,
+			]);
+			$table->addColumn('uid', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('classification', 'integer', [
+				'notnull' => false,
+				'default' => 0,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['calendarid', 'uri'], 'calobjects_index');
+		}
+
+		if (!$schema->hasTable('calendars')) {
+			$table = $schema->createTable('calendars');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('principaluri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('displayname', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('synctoken', 'integer', [
+				'notnull' => true,
+				'default' => 1,
+			]);
+			$table->addColumn('description', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('calendarorder', 'integer', [
+				'notnull' => true,
+				'default' => 0,
+			]);
+			$table->addColumn('calendarcolor', 'string', [
+				'notnull' => false,
+			]);
+			$table->addColumn('timezone', 'text', [
+				'notnull' => false,
+			]);
+			$table->addColumn('components', 'string', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('transparent', 'smallint', [
+				'notnull' => true,
+				'length' => 1,
+				'default' => 0,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['principaluri', 'uri'], 'calendars_index');
+		}
+
+		if (!$schema->hasTable('calendarchanges')) {
+			$table = $schema->createTable('calendarchanges');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('synctoken', 'integer', [
+				'notnull' => true,
+				'default' => 1,
+			]);
+			$table->addColumn('calendarid', 'integer', [
+				'notnull' => true,
+			]);
+			$table->addColumn('operation', 'smallint', [
+				'notnull' => true,
+				'length' => 1,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['calendarid', 'synctoken'], 'calendarid_synctoken');
+		}
+
+		if (!$schema->hasTable('calendarsubscriptions')) {
+			$table = $schema->createTable('calendarsubscriptions');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+			]);
+			$table->addColumn('principaluri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('source', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('displayname', 'string', [
+				'notnull' => false,
+				'length' => 100,
+			]);
+			$table->addColumn('refreshrate', 'string', [
+				'notnull' => false,
+				'length' => 10,
+			]);
+			$table->addColumn('calendarorder', 'integer', [
+				'notnull' => true,
+				'default' => 0,
+			]);
+			$table->addColumn('calendarcolor', 'string', [
+				'notnull' => false,
+			]);
+			$table->addColumn('striptodos', 'smallint', [
+				'notnull' => false,
+				'length' => 1,
+			]);
+			$table->addColumn('stripalarms', 'smallint', [
+				'notnull' => false,
+				'length' => 1,
+			]);
+			$table->addColumn('stripattachments', 'smallint', [
+				'notnull' => false,
+				'length' => 1,
+			]);
+			$table->addColumn('lastmodified', 'integer', [
+				'notnull' => false,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['principaluri', 'uri'], 'calsub_index');
+		}
+
+		if (!$schema->hasTable('schedulingobjects')) {
+			$table = $schema->createTable('schedulingobjects');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('principaluri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('calendardata', 'blob', [
+				'notnull' => false,
+			]);
+			$table->addColumn('uri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('lastmodified', 'integer', [
+				'notnull' => false,
+			]);
+			$table->addColumn('etag', 'string', [
+				'notnull' => false,
+				'length' => 32,
+			]);
+			$table->addColumn('size', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->setPrimaryKey(['id']);
+		}
+
+		if (!$schema->hasTable('cards_properties')) {
+			$table = $schema->createTable('cards_properties');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('addressbookid', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+				'default' => 0,
+			]);
+			$table->addColumn('cardid', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+				'default' => 0,
+			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('value', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('preferred', 'integer', [
+				'notnull' => true,
+				'length' => 4,
+				'default' => 1,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['cardid'], 'card_contactid_index');
+			$table->addIndex(['name'], 'card_name_index');
+			$table->addIndex(['value'], 'card_value_index');
+		}
+
+		if (!$schema->hasTable('calendarobjects_props')) {
+			$table = $schema->createTable('calendarobjects_props');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('calendarid', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+				'default' => 0,
+			]);
+			$table->addColumn('objectid', 'bigint', [
+				'notnull' => true,
+				'length' => 11,
+				'default' => 0,
+			]);
+			$table->addColumn('name', 'string', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('parameter', 'string', [
+				'notnull' => false,
+				'length' => 64,
+			]);
+			$table->addColumn('value', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addIndex(['objectid'], 'calendarobject_index');
+			$table->addIndex(['name'], 'calendarobject_name_index');
+			$table->addIndex(['value'], 'calendarobject_value_index');
+		}
+
+		if (!$schema->hasTable('dav_shares')) {
+			$table = $schema->createTable('dav_shares');
+			$table->addColumn('id', 'bigint', [
+				'autoincrement' => true,
+				'notnull' => true,
+				'length' => 11,
+			]);
+			$table->addColumn('principaluri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('type', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->addColumn('access', 'smallint', [
+				'notnull' => false,
+				'length' => 1,
+			]);
+			$table->addColumn('resourceid', 'integer', [
+				'notnull' => true,
+			]);
+			$table->addColumn('publicuri', 'string', [
+				'notnull' => false,
+				'length' => 255,
+			]);
+			$table->setPrimaryKey(['id']);
+			$table->addUniqueIndex(['principaluri', 'resourceid', 'type', 'publicuri'], 'dav_shares_index');
+		}
+		return $schema;
+	}
+}
